@@ -4,7 +4,9 @@ const bodyParser = require('body-parser');
 const nunjucks = require('nunjucks');
 const path = require('path');
 const PORT = 3000;
-
+const {
+  db
+} = require('./models');
 
 const app = express();
 
@@ -43,8 +45,13 @@ app.use((err, req, res, next) => {
   res.send('Uh-oh! Something went wrong:' + err.message);
 });
 
-
-app.listen(PORT, (req, res, next) => {
-  console.log(path.join(__dirname, 'public'));
-  console.log(`listening on ${PORT}`);
-});
+db.sync({
+    force: true
+  })
+  .then(() => {
+    app.listen(PORT, (req, res, next) => {
+      // console.log(path.join(__dirname, 'public'));
+      console.log(`listening on ${PORT}`);
+    });
+  })
+  .catch(console.error);
